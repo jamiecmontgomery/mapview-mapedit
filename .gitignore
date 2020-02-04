@@ -37,3 +37,11 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+*DS_Store
+
+._mapview.gif
+._mapview-mapedit.htm
+._mapview-mapedit_files
+
+*data/._CPAD
