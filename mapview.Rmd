@@ -1,12 +1,21 @@
 ---
 title: "mapview"
-author: "Jamie Afflerbach"
-date: "2/3/2020"
+author: "Jamie Montgomery"
+date: "2/4/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Overview
+
+This is a basic introduction to the `mapview` packaged developed by Tim Appelhans and others. For more information on the package and even more tutorials check out [https://r-spatial.github.io/mapview/index.html](https://r-spatial.github.io/mapview/index.html)
+
+
+## Setup
+
+You will need the `sf`, `mapview` and `raster` packages. 
+
+```{r setup, warning = F, message = F}
+knitr::opts_chunk$set(echo = TRUE, warning = F, message = F)
 
 library(sf)
 library(mapview)
@@ -15,17 +24,17 @@ library(raster)
 
 ## Load spatial data
 
-#### Point data
+### Point data
 
-Santa Barbara tweets from September - November in 2019
+The `sb-tweets` shapefile is a spatial dataframe of tweets from Santa Barbara  between September & November of 2019.
 
-```{r}
+```{r load_tweets}
 sb_tweets <- read_sf("data/sb-tweets.shp")
 ```
 
 Time for `mapview`
 
-```{r}
+```{r mapview}
 mapview(sb_tweets)
 ```
 
@@ -45,35 +54,53 @@ Playing with continuous (using days here which isn't usually what you would do)
 mapview(sb_tweets, zcol = "Day")
 ```
 
-#### Polygon data
+### Polygon data
 
-```{r}
-ca_parks <- read_sf("data/ca_protected_areas.shp")
+The California Protected Areas Database (CPAD) can be downloaded at: [https://www.calands.org/](https://www.calands.org/). I've already cropped it to the Santa Barbara area, and selected just a few of the columns, but the full dataset covers the entire state and has a lot more information.
 
-mapview(ca_parks)
+```{r load_cpad}
+#read in data
+cpad <- read_sf("data/ca_protected_areas.shp")
+
+#simple view
+mapview(cpad)
 ```
 
-Play with color
+You can play with color using the `zcol` argument to set the variable to color by. In this case we will use Access Type.
 
-```{r}
-mapview(ca_parks, zcol = "ACCESS_TYP")
+```{r color_by_variable}
+mapview(cpad, zcol = "ACCESS_TYP")
 ```
 
-Use `col.regions` to set a palette or discrete colors.
+By adding `burst = TRUE` to the `mapview` function you can split out a variable into unique layers according to all unique values of the variable
 
-```{r}
-mapview(ca_parks, zcol = "ACCESS_TYP", col.regions = c("purple", "yellow", "darkgreen", "orange"))
+```{r burst}
+mapview(cpad, zcol = "ACCESS_TYP", burst = TRUE)
 ```
 
-Combine layers
 
-```{r}
-mapview(ca_parks, zcol = "ACCESS_TYP") + mapview(sb_tweets, zcol = "usr_typ")
+You can set your own color palette or even discrete colors using the `col.regions` argument.
+
+```{r set_colors}
+mapview(cpad, zcol = "ACCESS_TYP", col.regions = c("purple", "yellow", "darkgreen", "orange"))
+mapview(cpad, zcol = "ACCESS_TYP", col.regions = mapviewPalette("mapviewSpectralColors")) 
 ```
 
-## Raster
+Easily combine layers using the `+`, and set label titles.
 
-```{r}
+```{r combine_layers}
+mapview(cpad, zcol = "ACCESS_TYP", layer.name = "CPAD Access") + 
+  mapview(sb_tweets, zcol = "usr_typ", layer.name = "SB Tweets", col.regions = c("darkgreen", "darkblue"))
+
+```
+
+You can change the basemap and also turn on and off layers that you've added to the map using the controls on the left hand side of the map.
+
+### Raster
+
+You can also plot raster data. The data here is fish catch in tons/km2 for the US Northeast region from 2015. It's a big raster but mapview scales it for viewing.  As you hover over the cells you see the value pop up on the top right portion of the map.
+
+```{r raster}
 catch <- raster("data/catch_2015.tif") 
 
 mapview(catch)
@@ -82,7 +109,13 @@ mapview(catch)
 
 ## Save with `mapshot`
 
-```{r}
+You can use the `mapshot` argument to save a map either as an interactive .html to share with others or post online, or a static png. When I first tried this I got a PhantomJS error:
+
+> `PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.`
+
+and had to install it before it worked...
+
+```{r save}
 #first name the map
 
 map <- mapview(sb_tweets, zcol = "usr_typ")
