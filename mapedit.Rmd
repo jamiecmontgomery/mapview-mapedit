@@ -1,0 +1,40 @@
+---
+title: "mapedit"
+author: "Jamie Afflerbach"
+date: "2/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(sf)
+library(mapedit)
+library(leaflet)
+```
+
+# Load data
+
+```{r}
+seaweed <- read_sf("data/seaweed_range_lines.shp")
+```
+
+Open up leaflet map and begin building lines, polygons or points. When done click finished and you have a list. To get the final as a simple feature select the data $finished.
+
+```{r}
+
+seaweed_lines <- editMap(leaflet() %>% addTiles())
+sw_lines <- seaweed_lines$finished
+
+#save
+write_sf(sw_lines, "../../Data/seaweed_range_lines", driver = "ESRI Shapefile")
+```
+
+Can I edit a shapefile? (answer: yes!)
+
+Let's edit the seaweed lines shapefile
+```{r}
+new_lines <- mapview(seaweed) %>%
+  editMap("seaweed")
+```
+

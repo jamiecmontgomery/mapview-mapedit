@@ -1,0 +1,92 @@
+---
+title: "mapview"
+author: "Jamie Afflerbach"
+date: "2/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(sf)
+library(mapview)
+library(raster)
+```
+
+## Load spatial data
+
+#### Point data
+
+Santa Barbara tweets from September - November in 2019
+
+```{r}
+sb_tweets <- read_sf("data/sb-tweets.shp")
+```
+
+Time for `mapview`
+
+```{r}
+mapview(sb_tweets)
+```
+
+Play with color
+
+```{r}
+mapview(sb_tweets, zcol = "usr_typ")
+```
+
+```{r}
+mapview(sb_tweets, zcol = "Month")
+```
+
+Playing with continuous (using days here which isn't usually what you would do)
+
+```{r}
+mapview(sb_tweets, zcol = "Day")
+```
+
+#### Polygon data
+
+```{r}
+ca_parks <- read_sf("data/ca_protected_areas.shp")
+
+mapview(ca_parks)
+```
+
+Play with color
+
+```{r}
+mapview(ca_parks, zcol = "ACCESS_TYP")
+```
+
+Use `col.regions` to set a palette or discrete colors.
+
+```{r}
+mapview(ca_parks, zcol = "ACCESS_TYP", col.regions = c("purple", "yellow", "darkgreen", "orange"))
+```
+
+Combine layers
+
+```{r}
+mapview(ca_parks, zcol = "ACCESS_TYP") + mapview(sb_tweets, zcol = "usr_typ")
+```
+
+## Raster
+
+```{r}
+catch <- raster("data/catch_2015.tif") 
+
+mapview(catch)
+```
+
+
+## Save with `mapshot`
+
+```{r}
+#first name the map
+
+map <- mapview(sb_tweets, zcol = "usr_typ")
+
+mapshot(map, file = "sb_tweet_map.png")
+```
+
