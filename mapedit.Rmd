@@ -1,34 +1,49 @@
 ---
 title: "mapedit"
-author: "Jamie Afflerbach"
-date: "2/3/2020"
+author: "Jamie Montgomery"
+date: "2/4/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Overview
+
+This is a short introduction to using the `mapedit` R package developed by Tim Applehans and others. For more information I encourage you to check out: [https://www.r-spatial.org/r/2019/03/31/mapedit_leafpm.html](https://www.r-spatial.org/r/2019/03/31/mapedit_leafpm.html)
+
+
+## Setup
+
+You will need the `sf`, `mapedit` and `leaflet` packages.
+
+```{r setup, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 library(sf)
 library(mapedit)
 library(leaflet)
 ```
 
-# Load data
+## Load data
+
+The `seaweed_range_lines` shapefile contains multiple polyline objects that identify native ranges of seaweed around the world. I created it by hand for a paper on [seaweed aquaculture potential (Froehlich et al. 2019)](https://www.sciencedirect.com/science/article/abs/pii/S0960982219308863).
 
 ```{r}
 seaweed <- read_sf("data/seaweed_range_lines.shp")
 ```
 
-Open up leaflet map and begin building lines, polygons or points. When done click finished and you have a list. To get the final as a simple feature select the data $finished.
+## Create a spatial object from scratch
+
+Open up a blank leaflet map using the `editMap()` function and begin building lines, polygons or points. When done click finished and you have a list. To get the final as a simple feature select the data $finished.
 
 ```{r}
 
 seaweed_lines <- editMap(leaflet() %>% addTiles())
 sw_lines <- seaweed_lines$finished
 
-#save
+#save using write_sf
 write_sf(sw_lines, "../../Data/seaweed_range_lines", driver = "ESRI Shapefile")
 ```
+
+## Edit a shapefile
 
 Can I edit a shapefile? (answer: yes!)
 
